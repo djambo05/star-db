@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import SwapiService from "../../services/swapi-service";
 import Spinner from "../spinner/spinner";
+import ErrorIndicator from "../error-indicator/error-indicator";
 
 export default class RandomPlanet extends Component {
   swapiService = new SwapiService();
@@ -13,30 +14,49 @@ export default class RandomPlanet extends Component {
       diameter: null,
     },
     loading: true,
+    error: false,
   };
-  constructor() {
-    super();
+
+  intervalId = null;
+
+  componentDidMount() {
     this.updatePlanet();
+    this.intervalId = setInterval(this.updatePlanet, 2500);
   }
 
-  updatePlanet() {
-    const id = Math.floor(Math.random() * 9) + 2;
-    this.swapiService.getPlanet(id).then((planet) =>
-      this.setState({
-        planet: {
-          id: id,
-          name: planet.name,
-          population: planet.population,
-          rotationPeriod: planet.rotation_period,
-          diameter: planet.diameter,
-        },
-        loading: false,
-      })
-    );
+  componentWillUnmount() {
+    clearInterval(this.intervalId);
   }
+  onPlanetError = (err) => {
+    this.setState({ error: true, loading: false });
+  };
+
+  updatePlanet = () => {
+    const id = Math.floor(Math.random() * 9) + 2;
+    console.log("update");
+    this.swapiService
+      .getPlanet(id)
+      .then((planet) =>
+        this.setState({
+          planet: {
+            id: id,
+            name: planet.name,
+            population: planet.population,
+            rotationPeriod: planet.rotation_period,
+            diameter: planet.diameter,
+          },
+          loading: false,
+        })
+      )
+      .catch(this.onPlanetError);
+  };
 
   render() {
-    const { planet, loading } = this.state;
+    const { planet, loading, error } = this.state;
+    const hasData = !(loading || error);
+    const errorMessage = error ? <ErrorIndicator /> : null;
+    const spinner = loading ? <Spinner /> : null;
+    const content = hasData ? <PlanetView planet={planet} /> : null;
     return (
       <div
         style={{
@@ -51,7 +71,9 @@ export default class RandomPlanet extends Component {
           margin: "30px",
         }}
       >
-        {loading ? <Spinner /> : <PlanetView planet={planet} />}
+        {errorMessage}
+        {spinner}
+        {content}
       </div>
     );
   }

@@ -1,16 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import PersonDetails from "../person-delails";
 import Header from "../header/header";
 import ItemList from "../item-list";
 import RandomPlanet from "../random-planet/random-planet";
 const App = () => {
+  const [toggle, setToggle] = useState(true);
   return (
     <div>
       <Header />
-      <RandomPlanet />
-      <div className="row mb2">
-        <div className="col-md-6">{/* <ItemList /> */}</div>
-        <div className="col-md-6">{/* <PersonDetails /> */}</div>
+      {toggle && <RandomPlanet />}
+      <button
+        style={{ padding: "10px 20px", marginLeft: 40 }}
+        onClick={() => setToggle(!toggle)}
+      >
+        Toggle Planets
+      </button>
+      <div>
+        <ItemList />
+        <div>{/* <PersonDetails /> */}</div>
       </div>
     </div>
   );
