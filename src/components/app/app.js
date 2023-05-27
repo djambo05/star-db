@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import PersonDetails from "../person-delails";
 import Header from "../header/header";
-import ItemList from "../item-list";
+import ItemList from "../item-list/item-list";
 import RandomPlanet from "../random-planet/random-planet";
 const App = () => {
   const [toggle, setToggle] = useState(true);
